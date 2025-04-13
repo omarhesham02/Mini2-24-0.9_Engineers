@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '23'
-          distribution: 'temurin'  # You can choose a different distribution if needed
+          distribution: 'temurin'
           cache: maven  # Caches Maven dependencies to speed up future runs
 
       - name: Build JAR
@@ -38,6 +38,12 @@ jobs:
 
       - name: Build and start postgres, mongodb, and app containers
         run: docker compose up -d --build postgres mongodb app
+
+      # Install MongoDB client tools in the MongoDB container
+      - name: Install MongoDB client tools in Mongo container
+        run: |
+          echo "Installing MongoDB client tools..."
+          docker exec mongo bash -c "apt-get update && apt-get install -y mongodb-clients"
 
       # Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
