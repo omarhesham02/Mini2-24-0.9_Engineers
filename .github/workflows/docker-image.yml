@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           java-version: '23'
-          distribution: 'temurin'
+          distribution: 'temurin'  # You can choose a different distribution if needed
           cache: maven  # Caches Maven dependencies to speed up future runs
 
       - name: Build JAR
@@ -39,11 +39,21 @@ jobs:
       - name: Build and start postgres, mongodb, and app containers
         run: docker compose up -d --build postgres mongodb app
 
-      # Install MongoDB client tools in the MongoDB container
-      - name: Install MongoDB client tools in Mongo container
+      # Install mongosh client in the Mongo container
+      - name: Install mongosh client in Mongo container
         run: |
-          echo "Installing MongoDB client tools..."
-          docker exec mongo bash -c "apt-get update && apt-get install -y mongodb-clients"
+          echo "Installing mongosh client..."
+          docker exec mongo bash -c "apt-get update && apt-get install -y gnupg wget && \
+            wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add - && \
+            echo 'deb [ arch=amd64 ] https://repo.mongodb.org/apt/debian stretch/mongodb-org/5.0 multiverse' | tee /etc/apt/sources.list.d/mongodb-org-5.0.list && \
+            apt-get update && apt-get install -y mongodb-mongosh"
+          
+        # Wait for MongoDB to be ready
+      - name: Wait for MongoDB to be ready
+        run: |
+          echo "Waiting for MongoDB..."
+          until docker exec mongo mongosh --eval 'db.runCommand({ ping: 1 })'; do sleep 1; done
+          echo "MongoDB is ready!"
 
       # Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
@@ -51,13 +61,6 @@ jobs:
           echo "Waiting for PostgreSQL..."
           until docker exec postgres pg_isready -U root -d postgres_db; do sleep 1; done
           echo "PostgreSQL is ready!"
-
-      # Wait for MongoDB to be ready
-      - name: Wait for MongoDB to be ready
-        run: |
-          echo "Waiting for MongoDB..."
-          until docker exec mongo mongo --eval 'db.runCommand({ ping: 1 })'; do sleep 1; done
-          echo "MongoDB is ready!"
 
       - name: Run tests inside the app container
         run: docker exec mini-app mvn test
