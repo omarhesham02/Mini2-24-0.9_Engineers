@@ -36,8 +36,25 @@ jobs:
           docker --version
           docker compose version
 
-      - name: Start containers and run tests
-        run: docker compose up --build --abort-on-container-exit
+      - name: Build and start postgres, mongodb, and app containers
+        run: docker compose up -d --build postgres mongodb app
+
+      # Wait for PostgreSQL to be ready
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          echo "Waiting for PostgreSQL..."
+          until docker exec postgres pg_isready -U root -d postgres_db; do sleep 1; done
+          echo "PostgreSQL is ready!"
+
+      # Wait for MongoDB to be ready
+      - name: Wait for MongoDB to be ready
+        run: |
+          echo "Waiting for MongoDB..."
+          until docker exec mongo mongo --eval 'db.runCommand({ ping: 1 })'; do sleep 1; done
+          echo "MongoDB is ready!"
+
+      - name: Run tests inside the app container
+        run: docker exec mini-app mvn test
 
       # Ensure reports are copied from the container
       - name: Copy test reports from container
@@ -53,4 +70,4 @@ jobs:
 
       - name: Shutdown containers
         if: always()
-        run: docker compose down
+        run: docker compose down -v
