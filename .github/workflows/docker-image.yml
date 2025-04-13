@@ -28,9 +28,6 @@ jobs:
           distribution: 'temurin'  # You can choose a different distribution if needed
           cache: maven  # Caches Maven dependencies to speed up future runs
 
-      - name: Build JAR
-        run: mvn -B package
-
       - name: Show Docker and Compose versions
         run: |
           docker --version
@@ -38,6 +35,10 @@ jobs:
 
       - name: Build and start postgres, mongodb, and app containers
         run: docker compose up -d --build postgres mongodb app
+
+
+      - name: Build JAR
+        run: mvn -B package
 
       # Install mongosh client in the Mongo container
       - name: Install mongosh client in Mongo container
