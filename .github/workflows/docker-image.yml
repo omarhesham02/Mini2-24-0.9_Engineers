@@ -1,0 +1,44 @@
+name: Java App CI with Docker Compose + Test Results
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Compose
+        run: docker-compose --version
+
+      - name: Start containers and run tests
+        run: docker-compose up --build --abort-on-container-exit
+
+      # Copy test results out of the container if needed
+      # (Only needed if your reports are generated inside a container)
+      - name: Copy test reports from container
+        run: |
+          docker cp $(docker-compose ps -q app):/app/target/surefire-reports ./surefire-reports
+        if: always()
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: surefire-reports/*.xml
+
+      - name: Shutdown containers
+        if: always()
+        run: docker-compose down
