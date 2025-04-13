@@ -39,22 +39,6 @@ jobs:
       - name: Build and start postgres, mongodb, and app containers
         run: docker compose up -d --build postgres mongodb app
 
-      # Install mongosh client in the Mongo container
-      - name: Install mongosh client in Mongo container
-        run: |
-          echo "Installing mongosh client..."
-          docker exec mongo bash -c "apt-get update && apt-get install -y gnupg wget && \
-            wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add - && \
-            echo 'deb [ arch=amd64 ] https://repo.mongodb.org/apt/debian stretch/mongodb-org/5.0 multiverse' | tee /etc/apt/sources.list.d/mongodb-org-5.0.list && \
-            apt-get update && apt-get install -y mongodb-mongosh"
-          
-        # Wait for MongoDB to be ready
-      - name: Wait for MongoDB to be ready
-        run: |
-          echo "Waiting for MongoDB..."
-          until docker exec mongo mongosh --eval 'db.runCommand({ ping: 1 })'; do sleep 1; done
-          echo "MongoDB is ready!"
-
       # Wait for PostgreSQL to be ready
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -62,11 +46,20 @@ jobs:
           until docker exec postgres pg_isready -U root -d postgres_db; do sleep 1; done
           echo "PostgreSQL is ready!"
 
-      - name: Install Maven
+      # Wait for MongoDB to be ready
+      - name: Wait for MongoDB to be ready
         run: |
-          sudo apt-get update
-          sudo apt-get install -y maven      
-          
+          echo "Waiting for MongoDB..."
+          until docker exec mongo mongo --eval 'db.runCommand({ ping: 1 })'; do sleep 1; done
+          echo "MongoDB is ready!"
+
+      # Install Maven inside the mini-app container (if not already present)
+      - name: Install Maven inside mini-app container
+        run: |
+          echo "Installing Maven inside mini-app container..."
+          docker exec mini-app apt-get update && docker exec mini-app apt-get install -y maven
+
+      # Run tests inside the app container
       - name: Run tests inside the app container
         run: docker exec mini-app mvn test
 
