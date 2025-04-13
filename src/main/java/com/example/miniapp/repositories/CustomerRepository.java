@@ -1,4 +1,7 @@
 package com.example.miniapp.repositories;
 
-public class CustomerRepository {
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface CustomerRepository {
 }
