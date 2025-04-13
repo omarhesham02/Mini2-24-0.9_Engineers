@@ -13,7 +13,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  test:
+  Test:
     runs-on: ubuntu-latest
 
     steps:
@@ -47,11 +47,8 @@ jobs:
           until nc -z localhost 27017; do sleep 1; done
           echo "MongoDB is ready!"
 
-      - name: Build JAR
+      - name: Build and test
         run: mvn -B package
-
-      - name: Run tests
-        run: mvn test
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
