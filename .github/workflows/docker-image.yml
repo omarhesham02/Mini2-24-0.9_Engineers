@@ -53,11 +53,19 @@ jobs:
           until docker exec mongo mongo --eval 'db.runCommand({ ping: 1 })'; do sleep 1; done
           echo "MongoDB is ready!"
 
+      # Install Mongo shell inside the MongoDB container (if needed)
+      - name: Install Mongo shell in MongoDB container
+        run: |
+          echo "Installing Mongo shell inside MongoDB container..."
+          docker exec mongo apt-get update && docker exec mongo apt-get install -y mongodb-clients
+        if: always()
+
       # Install Maven inside the mini-app container (if not already present)
       - name: Install Maven inside mini-app container
         run: |
           echo "Installing Maven inside mini-app container..."
           docker exec mini-app apt-get update && docker exec mini-app apt-get install -y maven
+        if: always()
 
       # Run tests inside the app container
       - name: Run tests inside the app container
