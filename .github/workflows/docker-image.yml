@@ -76,14 +76,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y maven      
           
-      - name: Run tests inside the app container
-        run: docker exec mini-app mvn test
-
-      # Ensure reports are copied from the container
-      - name: Copy test reports from container
-        run: |
-          docker cp $(docker compose ps -q app):/app/target/surefire-reports ./surefire-reports
-        if: always()
+      - name: Run tests 
+        run: mvn test
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
