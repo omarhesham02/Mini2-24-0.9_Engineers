@@ -62,6 +62,11 @@ jobs:
           until docker exec postgres pg_isready -U root -d postgres_db; do sleep 1; done
           echo "PostgreSQL is ready!"
 
+      - name: Install Maven
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y maven      
+          
       - name: Run tests inside the app container
         run: docker exec mini-app mvn test
 
