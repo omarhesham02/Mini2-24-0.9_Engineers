@@ -16,21 +16,13 @@ permissions:
 
 jobs:
   report:
-    if: ${{ github.event.workflow_run.conclusion != 'cancelled' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download test results artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          workflow: Build and Test 
-          name: test-results      
-          path: test-results
-
       - name: Publish Test Results
         uses: dorny/test-reporter@v2
-        if: always()
         with:
-          name: Unit Tests
-          path: test-results/*.xml
-          reporter: java-junit
+          artifact: test-results            # artifact name
+          name: Test Results                  # Name of the check run which will be created
+          path: '*.xml'                     # Path to test results (inside artifact .zip)
+          reporter: java-junit              # Format of test results
