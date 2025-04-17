@@ -42,7 +42,7 @@ jobs:
           echo "MongoDB is ready!"
 
       - name: Build and test
-        run: mvn -B package
+        run: mvn -B test
 
       - name: Publish Test Results
         if: always()
