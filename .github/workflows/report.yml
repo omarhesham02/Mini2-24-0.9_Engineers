@@ -1,6 +1,6 @@
 # .github/workflows/report.yml
 
-name: Report Test Results
+name: Publish Test Results
 
 on:
   workflow_run:
@@ -9,6 +9,8 @@ on:
       - completed
 
 permissions:
+  actions: read
+  contents: read
   checks: write
   pull-requests: write
 
@@ -26,7 +28,7 @@ jobs:
           path: test-results
 
       - name: Publish Test Results
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@v2
         if: always()
         with:
           name: Unit Tests
