@@ -1,4 +1,6 @@
-name: Java App CI with Docker Compose + Test Results
+# .github/workflows/test.yml
+
+name: Build and Test
 
 on:
   push:
@@ -8,12 +10,9 @@ on:
 
 permissions:
   contents: read
-  issues: read
-  checks: write
-  pull-requests: write
 
 jobs:
-  Test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -26,11 +25,6 @@ jobs:
           java-version: '23'
           distribution: 'temurin'
           cache: maven
-
-      - name: Show Docker and Compose versions
-        run: |
-          docker --version
-          docker compose version
 
       - name: Start PostgreSQL and MongoDB containers
         run: docker compose up -d postgres mongodb
@@ -50,8 +44,9 @@ jobs:
       - name: Build and test
         run: mvn -B package
 
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+      - name: Upload test results
         if: always()
+        uses: actions/upload-artifact@v4
         with:
-          files: target/surefire-reports/*.xml
+          name: test-results
+          path: target/surefire-reports/*.xml
