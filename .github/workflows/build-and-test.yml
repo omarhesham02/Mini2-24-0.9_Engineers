@@ -42,17 +42,6 @@ jobs:
           until nc -z localhost 27017; do sleep 1; done
           echo "MongoDB is ready!"
 
-      - name: Start App Locally in Background
-        run: |
-          echo "Starting the app in background..."
-          nohup mvn spring-boot:run > app.log 2>&1 &
-
-      - name: Wait for App to be ready
-        run: |
-          echo "Waiting for App..."
-          until curl --fail http://localhost:8080/health || curl --fail http://localhost:8080; do sleep 1; done
-          echo "App is ready!"
-
       - name: Build (without tests)
         run: mvn install -DskipTests
 
