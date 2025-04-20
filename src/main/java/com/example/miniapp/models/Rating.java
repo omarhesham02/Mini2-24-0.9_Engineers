@@ -8,7 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "rating")
+@Table(name = "ratings")
 @Getter
 @Setter
 public class Rating {
@@ -25,4 +25,12 @@ public class Rating {
 
     private String comment;
     private LocalDateTime created;
+
+    public Rating(long l, String customer, int i, String s, LocalDateTime now) {
+        this.entityId = l;
+        this.entityType = customer;
+        this.score = i;
+        this.comment = s;
+        this.created = now;
+    }
 }

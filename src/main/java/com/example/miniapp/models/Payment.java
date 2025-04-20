@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "payment")
+@Table(name = "payments")
 @Getter
 @Setter
 public class Payment {
@@ -38,5 +38,11 @@ public class Payment {
     public Payment(double amount, String paymentMethod) {
         this.amount = amount;
         this.paymentMethod = paymentMethod;
+    }
+
+    public Payment(double v, String bankTransfer, boolean b) {
+        this.amount = v;
+        this.paymentMethod = bankTransfer;
+        this.paymentStatus = b;
     }
 }
