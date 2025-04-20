@@ -43,7 +43,7 @@ jobs:
           echo "MongoDB is ready!"
 
       - name: Build (without tests)
-        run: mvn install -DskipTests
+        run: mvn --batch-mode -DskipTests package
 
 
   test:
@@ -88,12 +88,13 @@ jobs:
           echo "App is ready!"
 
       - name: Run Tests
-        run: mvn test
+        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
 
-      - name: Publish Test Results
+      - name: Test Results
         if: always()
         uses: dorny/test-reporter@v2
         with:
           name: Test Results
           path: 'target/surefire-reports/TEST-*.xml'
           reporter: java-junit
+          fail-on-error: true
