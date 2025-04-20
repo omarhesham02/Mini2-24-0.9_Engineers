@@ -27,8 +27,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Start app, PostgreSQL, and MongoDB containers
-        run: docker compose up -d app postgres mongodb
+      - name: Start PostgreSQL and MongoDB containers
+        run: docker compose up -d postgres mongodb
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -41,6 +41,11 @@ jobs:
           echo "Waiting for MongoDB..."
           until nc -z localhost 27017; do sleep 1; done
           echo "MongoDB is ready!"
+
+      - name: Start App Locally in Background
+        run: |
+          echo "Starting the app in background..."
+          nohup mvn spring-boot:run > app.log 2>&1 &
 
       - name: Wait for App to be ready
         run: |
@@ -67,8 +72,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Start app, PostgreSQL, and MongoDB containers
-        run: docker compose up -d app postgres mongodb
+      - name: Start PostgreSQL and MongoDB containers
+        run: docker compose up -d postgres mongodb
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -81,6 +86,11 @@ jobs:
           echo "Waiting for MongoDB..."
           until nc -z localhost 27017; do sleep 1; done
           echo "MongoDB is ready!"
+
+      - name: Start App Locally in Background
+        run: |
+          echo "Starting the app in background..."
+          nohup mvn spring-boot:run > app.log 2>&1 &
 
       - name: Wait for App to be ready
         run: |
