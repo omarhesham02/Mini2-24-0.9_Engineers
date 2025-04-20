@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Table(name = "customer")
+@Table(name = "customers")
 @Getter
 @Setter
 public class Customer {
@@ -21,4 +21,14 @@ public class Customer {
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Trip> trips;
+
+    public Customer(String johnDoe, String mail, String number) {
+        this.name = johnDoe;
+        this.email = mail;
+        this.phoneNumber = number;
+    }
+
+    public Customer() {
+
+    }
 }
