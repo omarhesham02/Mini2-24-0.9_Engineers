@@ -88,13 +88,12 @@ jobs:
           echo "App is ready!"
 
       - name: Run Tests
-        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        run: mvn test
 
       - name: Test Results
         if: always()
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v1
         with:
           name: Test Results
           path: 'target/surefire-reports/TEST-*.xml'
           reporter: java-junit
-          fail-on-error: true
