@@ -27,8 +27,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Start PostgreSQL and MongoDB containers
-        run: docker compose up -d postgres mongodb
+      - name: Start app, PostgreSQL, and MongoDB containers
+        run: docker compose up -d app postgres mongodb
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -41,6 +41,12 @@ jobs:
           echo "Waiting for MongoDB..."
           until nc -z localhost 27017; do sleep 1; done
           echo "MongoDB is ready!"
+
+      - name: Wait for App to be ready
+        run: |
+          echo "Waiting for App..."
+          until curl --fail http://localhost:8080/health || curl --fail http://localhost:8080; do sleep 1; done
+          echo "App is ready!"
 
       - name: Build (without tests)
         run: mvn install -DskipTests
@@ -61,8 +67,8 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Start PostgreSQL and MongoDB containers
-        run: docker compose up -d postgres mongodb
+      - name: Start app, PostgreSQL, and MongoDB containers
+        run: docker compose up -d app postgres mongodb
 
       - name: Wait for PostgreSQL to be ready
         run: |
@@ -75,6 +81,12 @@ jobs:
           echo "Waiting for MongoDB..."
           until nc -z localhost 27017; do sleep 1; done
           echo "MongoDB is ready!"
+
+      - name: Wait for App to be ready
+        run: |
+          echo "Waiting for App..."
+          until curl --fail http://localhost:8080/health || curl --fail http://localhost:8080; do sleep 1; done
+          echo "App is ready!"
 
       - name: Run Tests
         run: mvn test
