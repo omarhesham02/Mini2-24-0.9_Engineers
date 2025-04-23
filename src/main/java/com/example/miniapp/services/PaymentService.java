@@ -6,15 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.miniapp.models.Payment;
-import com.example.miniapp.models.Trip;
 import com.example.miniapp.repositories.PaymentRepository;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PaymentService {
@@ -64,9 +59,10 @@ public class PaymentService {
     }
 
     public void deletePayment(Long id) {
-        Payment existingPayment = paymentRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found"));
-        paymentRepository.delete(existingPayment);
+        Optional<Payment> foundPayment = paymentRepository.findById(id);
+        if (foundPayment.isPresent()) {
+            paymentRepository.delete(foundPayment.get());
+        }
     }
 
     public List<Payment> findPaymentsByTripId(Long tripId) {

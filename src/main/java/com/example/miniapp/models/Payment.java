@@ -18,7 +18,7 @@ public class Payment {
     private boolean paymentStatus;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "trip_id", nullable = false)
+    @JoinColumn(name = "trip_id", nullable = true)
     private Trip trip;
 
     // Default constructor
