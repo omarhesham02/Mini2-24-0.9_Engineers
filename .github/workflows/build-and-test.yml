@@ -41,13 +41,27 @@ jobs:
           echo "Waiting for MongoDB..."
           until nc -z localhost 27017; do sleep 1; done
           echo "MongoDB is ready!"
+          
+      - name: Build (without tests)
+        run: mvn --batch-mode -DskipTests package
 
-      - name: Build and test
-        run: mvn -B test
+      - name: Start App Locally in Background
+        run: |
+          echo "Starting the app in background..."
+          nohup mvn spring-boot:run > app.log 2>&1 &
 
-      - name: Publish Test Results
+      - name: Wait for App to be ready
+        run: |
+          echo "Waiting for App..."
+          until curl --fail http://localhost:8080/health || curl --fail http://localhost:8080; do sleep 1; done
+          echo "App is ready!"
+
+      - name: Run Tests
+        run: mvn test
+
+      - name: Test Results
         if: always()
-        uses: dorny/test-reporter@v2
+        uses: dorny/test-reporter@v1
         with:
           name: Test Results
           path: 'target/surefire-reports/TEST-*.xml'

@@ -15,7 +15,6 @@ import java.util.Optional;
 public class RatingService {
 
     private final RatingRepository ratingRepository;
-
     @Autowired
     private MongoTemplate mongoTemplate;
 

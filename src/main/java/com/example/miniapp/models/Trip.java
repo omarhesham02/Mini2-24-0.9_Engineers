@@ -7,7 +7,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "trip")
+@Table(name = "trips")
 @Getter
 @Setter
 public class Trip {
@@ -30,4 +30,25 @@ public class Trip {
 
     @OneToOne(mappedBy = "trip", cascade = CascadeType.ALL)
     private Payment payment;
+
+    public Trip() {}
+
+    public Trip(LocalDateTime tripDate, String origin, String destination, double tripCost) {
+        this.tripDate = tripDate;
+        this.origin = origin;
+        this.destination = destination;
+        this.tripCost = tripCost;
+    }
+
+    public Trip(LocalDateTime tripDate, String origin, String destination,
+                double tripCost, double distance, int estimatedDuration,
+                Captain captain, Customer customer) {
+        this.tripDate = tripDate;
+        this.origin = origin;
+        this.destination = destination;
+        this.tripCost = tripCost;
+        this.captain = captain;
+        this.customer = customer;
+    }
+
 }
